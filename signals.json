@@ -1,0 +1,38 @@
+[
+  {
+    "time": "18:00:22",
+    "signal": "BUY",
+    "pair": "USD/ARS (OTC)",
+    "price": 1156.12
+  },
+  {
+    "time": "18:02:25",
+    "signal": "BUY",
+    "pair": "USD/ARS (OTC)",
+    "price": 1156.07
+  },
+  {
+    "time": "18:04:26",
+    "signal": "BUY",
+    "pair": "USD/ARS (OTC)",
+    "price": 1156.17
+  },
+  {
+    "time": "18:06:29",
+    "signal": "BUY",
+    "pair": "USD/ARS (OTC)",
+    "price": 1156.5
+  },
+  {
+    "time": "18:10:28",
+    "signal": "BUY",
+    "pair": "USD/ARS (OTC)",
+    "price": 1156.63
+  },
+  {
+    "time": "18:12:31",
+    "signal": "SELL",
+    "pair": "USD/ARS (OTC)",
+    "price": 1156.26
+  }
+]
