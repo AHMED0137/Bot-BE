@@ -14,7 +14,9 @@ app.secret_key = 'your-secret-key'  # Replace with your strong secret key
 CORS(
     app,
     supports_credentials=True,
-    origins=["https://bot-fe-gamma.vercel.app"],
+    origins=["https://bot-fe-gamma.vercel.app",       
+              "https://bot-1huh826ti-ahmads-projects-1a57f3bf.vercel.app"
+],
     methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization"]
 )
@@ -32,19 +34,25 @@ USERS = {
     "Paradox": generate_password_hash("Paradox@137")
 }
 
-# Explicitly handle OPTIONS preflight requests for CORS
 @app.before_request
 def handle_options():
     if request.method == 'OPTIONS':
         resp = app.make_default_options_response()
         headers = resp.headers
-
-        headers['Access-Control-Allow-Origin'] = "https://bot-fe-gamma.vercel.app"
+        origin = request.headers.get('Origin')
+        allowed_origins = [
+            "https://bot-fe-gamma.vercel.app",
+            "https://bot-1huh826ti-ahmads-projects-1a57f3bf.vercel.app"
+        ]
+        if origin in allowed_origins:
+            headers['Access-Control-Allow-Origin'] = origin
+        else:
+            headers['Access-Control-Allow-Origin'] = "null"
         headers['Access-Control-Allow-Credentials'] = 'true'
         headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
         headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
         return resp
-
+    
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.json
