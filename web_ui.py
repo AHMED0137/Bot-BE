@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, redirect, url_for, session, send_from_directory
+from flask import Flask, jsonify, request, session, send_from_directory, make_response
 import os
 import json
 import subprocess
@@ -6,24 +6,29 @@ import sys
 from threading import Thread
 from flask_cors import CORS
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask import make_response
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static")
+app.secret_key = 'your-secret-key'  # Replace with a strong secret key
+
+# ✅ CORS Setup for React frontend hosted on Vercel
+CORS(app, supports_credentials=True, origins=["https://bot-fe-gamma.vercel.app"])
+
+# ✅ Ensure cookies are cross-site compatible
 app.config.update(
-    SESSION_COOKIE_SAMESITE='None',
+    SESSION_COOKIE_SAMESITE="None",
     SESSION_COOKIE_SECURE=True
 )
-CORS(app, supports_credentials=True, origins=["https://bot-fe-gamma.vercel.app"])  # Allow React frontend to access API
-app.secret_key = 'your-secret-key'  # Change this to a strong random string
+
 bot_process = None
 
-# Users and hashed passwords
+# ✅ Users and passwords (hashed)
 USERS = {
     "admin": generate_password_hash("Admin@1220"),
     "Paradox": generate_password_hash("Paradox@137")
 }
 
 # -------------------- API Routes --------------------
+
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.json
@@ -87,7 +92,6 @@ def stop_bot():
         return jsonify({"message": "Bot stopped."}), 200
     else:
         return jsonify({"message": "Bot is not running."}), 200
-
 
 @app.route('/api/logout', methods=['POST'])
 def logout():
