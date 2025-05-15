@@ -1,4 +1,3 @@
-
 import time
 from datetime import datetime, timedelta
 import requests
@@ -45,8 +44,6 @@ def validate_license():
         print("❌ License expiry date invalid.", e)
         exit()
 
-validate_license()
-
 # ========== TELEGRAM ALERT ==========
 
 def send_telegram_alert(message):
@@ -73,7 +70,7 @@ def log_signal_to_txt(timestamp, pair, direction, price):
         f.write(log_line)
 
 # ========== LOG TO JSON ==========
-        
+
 def save_signal_to_json(data, file="signals.json"):
     try:
         signals = []
@@ -110,6 +107,7 @@ def calculate_channel_breakout(price_series, length=20, swing_sensitivity=1.0):
 
 class QuotexSignalBot:
     def __init__(self, headless=False):
+        # Pass headless flag to seleniumbase Driver
         self.driver = Driver(uc=True, headless=headless)
         self.signal_data = None
         self.last_signal_time = None
@@ -202,13 +200,17 @@ class QuotexSignalBot:
             print("\n🚩 Bot manually stopped.")
             self.driver.quit()
 
-#   --------- clear json ---------
+# --------- clear json ---------
 if os.path.exists("signals.json"):
     with open("signals.json", "w") as f:
         json.dump([], f)
+
 # ========== RUN ==========
 
 if __name__ == "__main__":
     validate_license()
-    bot = QuotexSignalBot(headless=False)
+
+    # Detect if running on Railway (server) to run headless
+    is_server = bool(os.getenv("RAILWAY_SERVICE_ID"))
+    bot = QuotexSignalBot(headless=is_server)
     bot.run_bot()
