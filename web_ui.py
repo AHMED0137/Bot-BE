@@ -13,7 +13,7 @@ app.config.update(
     SESSION_COOKIE_SAMESITE='None',
     SESSION_COOKIE_SECURE=True
 )
-CORS(app, supports_credentials=True, origins=["https://bot-1huh826ti-ahmads-projects-1a57f3bf.vercel.app"])  # Allow React frontend to access API
+CORS(app, supports_credentials=True, origins=["https://bot-fe-gamma.vercel.app"])  # Allow React frontend to access API
 app.secret_key = 'your-secret-key'  # Change this to a strong random string
 bot_process = None
 
