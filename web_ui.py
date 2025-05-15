@@ -19,6 +19,16 @@ USERS = {
 }
 
 # -------------------- API Routes --------------------
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+    if username in USERS and check_password_hash(USERS[username], password):
+        session["logged_in"] = True
+        session["username"] = username
+        return jsonify({'success': True})
+    return jsonify({'success': False, 'error': 'Invalid credentials'}), 401
 
 @app.route('/api/user')
 def get_user():
@@ -71,16 +81,6 @@ def stop_bot():
     else:
         return jsonify({"message": "Bot is not running."}), 200
 
-@app.route('/api/login', methods=['POST'])
-def login():
-    data = request.json
-    username = data.get('username')
-    password = data.get('password')
-    if username in USERS and check_password_hash(USERS[username], password):
-        session["logged_in"] = True
-        session["username"] = username
-        return jsonify({'success': True})
-    return jsonify({'success': False, 'error': 'Invalid credentials'}), 401
 
 @app.route('/api/logout', methods=['POST'])
 def logout():
