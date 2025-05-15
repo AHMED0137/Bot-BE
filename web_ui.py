@@ -6,9 +6,14 @@ import sys
 from threading import Thread
 from flask_cors import CORS
 from werkzeug.security import check_password_hash, generate_password_hash
+from flask import make_response
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True, origins=["https://bot-fe-gamma.vercel.app"])  # Allow React frontend to access API
+app.config.update(
+    SESSION_COOKIE_SAMESITE='None',
+    SESSION_COOKIE_SECURE=True
+)
+CORS(app, supports_credentials=True, origins=["https://bot-1huh826ti-ahmads-projects-1a57f3bf.vercel.app"])  # Allow React frontend to access API
 app.secret_key = 'your-secret-key'  # Change this to a strong random string
 bot_process = None
 
@@ -27,7 +32,9 @@ def login():
     if username in USERS and check_password_hash(USERS[username], password):
         session["logged_in"] = True
         session["username"] = username
-        return jsonify({'success': True})
+        response = make_response(jsonify({'success': True}))
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        return response
     return jsonify({'success': False, 'error': 'Invalid credentials'}), 401
 
 @app.route('/api/user')
