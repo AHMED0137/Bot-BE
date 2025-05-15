@@ -8,26 +8,42 @@ from flask_cors import CORS
 from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__, static_folder="static")
-app.secret_key = 'your-secret-key'  # Replace with a strong secret key
+app.secret_key = 'your-secret-key'  # Replace with your strong secret key
 
-# ✅ CORS Setup for React frontend hosted on Vercel
-CORS(app, supports_credentials=True, origins=["https://bot-fe-gamma.vercel.app"])
+# CORS setup - allow your Vercel frontend origin, support credentials, allow methods and headers
+CORS(
+    app,
+    supports_credentials=True,
+    origins=["https://bot-fe-gamma.vercel.app"],
+    methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"]
+)
 
-# ✅ Ensure cookies are cross-site compatible
+# Configure session cookies for cross-site usage
 app.config.update(
     SESSION_COOKIE_SAMESITE="None",
-    SESSION_COOKIE_SECURE=True
+    SESSION_COOKIE_SECURE=True,
 )
 
 bot_process = None
 
-# ✅ Users and passwords (hashed)
 USERS = {
     "admin": generate_password_hash("Admin@1220"),
     "Paradox": generate_password_hash("Paradox@137")
 }
 
-# -------------------- API Routes --------------------
+# Explicitly handle OPTIONS preflight requests for CORS
+@app.before_request
+def handle_options():
+    if request.method == 'OPTIONS':
+        resp = app.make_default_options_response()
+        headers = resp.headers
+
+        headers['Access-Control-Allow-Origin'] = "https://bot-fe-gamma.vercel.app"
+        headers['Access-Control-Allow-Credentials'] = 'true'
+        headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+        headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
+        return resp
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -39,6 +55,7 @@ def login():
         session["username"] = username
         response = make_response(jsonify({'success': True}))
         response.headers["Access-Control-Allow-Credentials"] = "true"
+        response.headers["Access-Control-Allow-Origin"] = "https://bot-fe-gamma.vercel.app"
         return response
     return jsonify({'success': False, 'error': 'Invalid credentials'}), 401
 
@@ -98,19 +115,13 @@ def logout():
     session.clear()
     return jsonify({'success': True})
 
-# -------------------- React Frontend Routing --------------------
-
+# Serve React app static files
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_react(path):
-    """
-    Serves the React build if path exists, or index.html as fallback for client-side routes.
-    """
     if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
         return send_from_directory(app.static_folder, path)
     return send_from_directory(app.static_folder, 'index.html')
-
-# -------------------- Run Server --------------------
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
