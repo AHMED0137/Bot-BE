@@ -8,7 +8,7 @@ from flask_cors import CORS
 from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True, origins=["https://bot-fe-gamma.vercel.app/"])  # Allow React frontend to access API
+CORS(app, supports_credentials=True, origins=["https://bot-fe-gamma.vercel.app"])  # Allow React frontend to access API
 app.secret_key = 'your-secret-key'  # Change this to a strong random string
 bot_process = None
 
