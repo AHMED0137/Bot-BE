@@ -7,7 +7,7 @@ from threading import Thread
 from flask_cors import CORS
 from werkzeug.security import check_password_hash, generate_password_hash
 
-app = Flask(__name__, static_folder='../frontend/build', static_url_path='/')
+app = Flask(__name__)
 CORS(app, supports_credentials=True)  # Allow React frontend to access API
 app.secret_key = 'your-secret-key'  # Change this to a strong random string
 bot_process = None
@@ -102,5 +102,5 @@ def serve_react(path):
 # -------------------- Run Server --------------------
 
 if __name__ == '__main__':
-    app.run(debug=True)
-    
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
